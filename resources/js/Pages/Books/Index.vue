@@ -1,4 +1,10 @@
 <template>
+    <Head title="Dashboard" />
+
+    <AuthenticatedLayout>
+        <template #header>
+            <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">Test</h2>
+        </template>
     <div>
         <h1 class="text-3xl font-semibold mb-6">Select a Book</h1>
 
@@ -22,12 +28,14 @@
             </div>
         </div>
     </div>
+    </AuthenticatedLayout>
 </template>
 
 <script setup>
 import { ref } from 'vue';
-import { usePage } from '@inertiajs/vue3';
+import {Head, usePage} from '@inertiajs/vue3';
 import { router } from '@inertiajs/vue3';
+import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 
 
 const { props } = usePage();

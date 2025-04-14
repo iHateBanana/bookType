@@ -32,14 +32,17 @@ Route::get('/typing', function () {
     return redirect()->route('typing.practice', ['book' => $book->id]);
 })->name('typing.demo');
 
+
+
 // Route to show the practice page for a selected book
-Route::get('/typing/practice/{book?}', [TypingController::class, 'practice'])->name('typing.practice');
+Route::get('/practice/{book}', [TypingController::class, 'practice'])->name('typing.practice');
+Route::get('/demo', [TypingController::class, 'demo'])->name('typing.demo');
 
 // Route for books (displays all books)
 Route::get('/books', [BookController::class, 'index'])->name('books.index');
 
 Route::get('/select', [TypingController::class, 'selectBook'])->name('typing.select');
-Route::get('/practice/{book}', [TypingController::class, 'practice'])->name('typing.practice');
+//Route::get('/practice/{book}', [TypingController::class, 'practice'])->name('typing.practice');
 
 
 // Route for fetching a book from Project Gutenberg and redirecting to typing practice

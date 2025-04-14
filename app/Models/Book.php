@@ -10,7 +10,7 @@ class Book extends Model
 {
     use HasFactory;
 
-    protected $table = 'create_books_table';
+    protected $table = 'books';
 
     protected $fillable = [
         'title', 'author', 'cover_image', 'text', 'gutenberg_id'

@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Models\Book;
@@ -26,10 +25,21 @@ class TypingController extends Controller
         ]);
     }
 
+
+    /**
+     * Show the demo page for typing practice.
+     *
+     * @return \Inertia\Response
+     */
+    public function demo()
+    {
+        // Render the demo page (you can create a separate Vue component for it)
+        return Inertia::render('Typing/Demo');
+    }
+
     public function selectBook()
     {
         $books = Book::all();
         return Inertia::render('Typing/SelectBook', ['books' => $books]);
     }
-
 }

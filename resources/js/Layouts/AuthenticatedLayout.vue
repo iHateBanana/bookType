@@ -32,12 +32,12 @@ const showingNavigationDropdown = ref(false);
                                 <NavLink :href="route('dashboard')" :active="route().current('dashboard')">
                                     Dashboard
                                 </NavLink>
+                                <!-- Add Navigation for Practice and Select Book Pages -->
 
-                                <NavLink :href="route('typing.practice', { book: selectedBook.id })" :active="route().current('typing.practice')">
-                                    Practice
-                                </NavLink>
 
-            s                    <NavLink :href="route('books.index')" :active="route().current('books.index')">
+                                <NavLink
+                                    :href="route('books.index')"
+                                    :active="route().current('books.index')">
                                     Select Book
                                 </NavLink>
                             </div>
@@ -122,10 +122,7 @@ const showingNavigationDropdown = ref(false);
                         <ResponsiveNavLink :href="route('dashboard')" :active="route().current('dashboard')">
                             Dashboard
                         </ResponsiveNavLink>
-                        <!-- Add Responsive Navigation for Practice and Select Book Pages -->
-                        <ResponsiveNavLink :href="route('typing.practice')" :active="route().current('typing.practice')">
-                            Practice
-                        </ResponsiveNavLink>
+
                         <ResponsiveNavLink :href="route('books.index')" :active="route().current('books.index')">
                             Select Book
                         </ResponsiveNavLink>
