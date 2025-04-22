@@ -1,9 +1,9 @@
 <?php
 namespace App\Http\Controllers;
-
 use App\Services\ProjectGutenburgService;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Log;
+use App\Models\Book;
 
 class BookController extends Controller
 {
@@ -14,18 +14,45 @@ class BookController extends Controller
         $this->gutenbergService = $gutenbergService;
     }
 
+
     public function index()
     {
-        $books = \App\Models\Book::all();
+        $books = Book::paginate(12); // or ->all()
 
         return Inertia::render('Books/Index', [
-            'books' => $books]);
+            'books' => $books,
+        ]);
     }
+
+
+    public function selectBook()
+    {
+        $books = Book::orderBy('title')->get();
+
+        return Inertia::render('Typing/Select', [
+            'books' => $books,
+        ]);
+    }
+
+
+    public function show(Book $book = null)
+    {
+        if (!$book) {
+            return Inertia::render('Typing/Demo');
+        }
+
+        return Inertia::render('Typing/Practice', [
+            'book' => $book,
+        ]);
+    }
+
+
 
     public function fetchFromGutenberg($bookId)
     {
         // Attempt to fetch the book from Gutenberg
-        $book = $this->gutenbergService->fetchBook($bookId);
+        $book = $this->gutenbergService->fetchBook(1342);
+
 
         // If the book could not be fetched, log the error and redirect back with a failure message
         if (!$book) {

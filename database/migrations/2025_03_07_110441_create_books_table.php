@@ -10,12 +10,14 @@ class CreateBooksTable extends Migration
     {
         Schema::create('books', function (Blueprint $table) {
             $table->id();
+            $table->integer('gutenberg_id')->unique();
             $table->string('title');
-            $table->string('author');
-            $table->string('cover_image')->nullable();
-            $table->text('text');
-            $table->string('gutenberg_id')->unique();
+            $table->string('author')->nullable();
+            $table->string('language')->default('en');
+            $table->text('download_url');
+            $table->text('cover_url')->nullable();
             $table->timestamps();
+
         });
     }
 

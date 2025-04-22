@@ -32,6 +32,12 @@ Route::get('/typing', function () {
     return redirect()->route('typing.practice', ['book' => $book->id]);
 })->name('typing.demo');
 
+Route::get('/typing/{book}', [TypingController::class, 'show'])->name('typing.practice');
+
+Route::get('/test-fetch/{id}', function ($id) {
+    $book = app(\App\Services\ProjectGutenburgService::class)->fetchBook($id);
+    return $book ? "Book saved: {$book->title}" : 'Failed to save book.';
+});
 
 
 // Route to show the practice page for a selected book
@@ -44,6 +50,7 @@ Route::get('/books', [BookController::class, 'index'])->name('books.index');
 Route::get('/select', [TypingController::class, 'selectBook'])->name('typing.select');
 //Route::get('/practice/{book}', [TypingController::class, 'practice'])->name('typing.practice');
 
+Route::get('/select', [BookController::class, 'selectBook'])->name('typing.select');
 
 // Route for fetching a book from Project Gutenberg and redirecting to typing practice
 Route::get('/books/fetch/{bookId}', [BookController::class, 'fetchFromGutenberg'])->name('books.fetch');

@@ -13,8 +13,14 @@ class Book extends Model
     protected $table = 'books';
 
     protected $fillable = [
-        'title', 'author', 'cover_image', 'text', 'gutenberg_id'
+        'gutenberg_id',
+        'title',
+        'author',
+        'language',
+        'download_url',
+        'cover_url',
     ];
+
 
     // Optionally, you can also define the relationship if needed (e.g., for user-generated content or progress)
     public function userProgress()
