@@ -17,12 +17,13 @@ class BookController extends Controller
 
     public function index()
     {
-        $books = Book::paginate(12); // or ->all()
+        $books = Book::whereNotNull('title')->get(); // Filter out bad data just in case
 
         return Inertia::render('Books/Index', [
-            'books' => $books,
+            'books' => $books
         ]);
     }
+
 
 
     public function selectBook()
@@ -35,16 +36,21 @@ class BookController extends Controller
     }
 
 
-    public function show(Book $book = null)
+    public function show(Book $book)
     {
         if (!$book) {
             return Inertia::render('Typing/Demo');
         }
 
+        // Fetch book text based on the download URL or another attribute
+        $bookText = file_get_contents($book->download_url);  // Assuming the book has a download_url
+
         return Inertia::render('Typing/Practice', [
             'book' => $book,
+            'bookText' => $bookText,
         ]);
     }
+
 
 
 

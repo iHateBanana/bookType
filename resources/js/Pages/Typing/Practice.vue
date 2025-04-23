@@ -1,15 +1,31 @@
 <template>
     <div>
-        <h1 v-if="book">{{ book.title }} by {{ book.author }}</h1>
-        <h1 v-else>Free Practice Mode</h1>
+        <h1 class="text-2xl font-bold mb-6">{{ book.title }} - Practice</h1>
 
-        <p>{{ currentText }}</p>
+        <div v-if="bookText">
+            <pre class="bg-gray-100 p-4 rounded">
+                {{ bookText }}
+            </pre>
 
-        <textarea v-model="userInput" @input="checkTyping" rows="5" cols="50"></textarea>
+            <textarea v-model="userInput" @input="checkTyping" rows="5" cols="50"></textarea>
 
-        <p>WPM: {{ wpm }} | Accuracy: {{ accuracy.toFixed(2) }}%</p>
+            <p>WPM: {{ wpm }} | Accuracy: {{ accuracy.toFixed(2) }}%</p>
+        </div>
+
+        <div v-else>
+            <p>Loading book content...</p>
+        </div>
     </div>
 </template>
+
+<script setup>
+import { defineProps } from 'vue';
+
+const props = defineProps({
+    book: Object,
+    bookText: String,
+});
+</script>
 
 <script setup>
 import { ref, onMounted } from 'vue';

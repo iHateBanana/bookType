@@ -39,6 +39,8 @@ Route::get('/test-fetch/{id}', function ($id) {
     return $book ? "Book saved: {$book->title}" : 'Failed to save book.';
 });
 
+Route::get('/typing/select', [BookController::class, 'selectBook'])->name('typing.select');
+
 
 // Route to show the practice page for a selected book
 Route::get('/practice/{book}', [TypingController::class, 'practice'])->name('typing.practice');
