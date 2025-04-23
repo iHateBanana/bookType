@@ -18,6 +18,8 @@ return new class extends Migration
             $table->float('wpm');
             $table->float('accuracy');
             $table->longText('completed_text');
+            $table->integer('offset')->default(0);
+            $table->enum('status', ['in_progress', 'completed', 'abandoned'])->default('in_progress');
             $table->timestamps();
         });
     }

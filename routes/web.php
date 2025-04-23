@@ -1,5 +1,6 @@
 <?php
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\TypingSessionController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -27,35 +28,28 @@ Route::get('/', function () {
 });
 
 // Route for the typing demo, which will redirect to typing.practice with a book
-Route::get('/typing', function () {
-    $book = \App\Models\Book::first();
-    return redirect()->route('typing.practice', ['book' => $book->id]);
-})->name('typing.demo');
-
-Route::get('/typing/{book}', [TypingController::class, 'show'])->name('typing.practice');
+//Route::get('/typing', function () {
+//    $book = \App\Models\Book::first();
+//    return redirect()->route('typing.practice', ['book' => $book->id]);
+//})->name('typing.demo');
 
 Route::get('/test-fetch/{id}', function ($id) {
     $book = app(\App\Services\ProjectGutenburgService::class)->fetchBook($id);
     return $book ? "Book saved: {$book->title}" : 'Failed to save book.';
 });
 
-Route::get('/typing/select', [BookController::class, 'selectBook'])->name('typing.select');
-
-
-// Route to show the practice page for a selected book
-Route::get('/practice/{book}', [TypingController::class, 'practice'])->name('typing.practice');
-Route::get('/demo', [TypingController::class, 'demo'])->name('typing.demo');
-
-// Route for books (displays all books)
-Route::get('/books', [BookController::class, 'index'])->name('books.index');
-
-Route::get('/select', [TypingController::class, 'selectBook'])->name('typing.select');
-//Route::get('/practice/{book}', [TypingController::class, 'practice'])->name('typing.practice');
-
-Route::get('/select', [BookController::class, 'selectBook'])->name('typing.select');
-
 // Route for fetching a book from Project Gutenberg and redirecting to typing practice
 Route::get('/books/fetch/{bookId}', [BookController::class, 'fetchFromGutenberg'])->name('books.fetch');
+// Route for books (displays all books)
+Route::get('/books', [BookController::class, 'index'])->name('books.index');
+Route::get('/select', [BookController::class, 'selectBook'])->name('typing.select');
+
+Route::post('/sessions', [TypingSessionController::class, 'store']);
+
+// Route to show the practice page for a selected book
+Route::get('/typing/{book}', [TypingController::class, 'show'])->name('typing.practice');
+Route::get('/typing/{book}', [TypingController::class, 'practice'])->name('typing.practice');
+Route::get('/demo', [TypingController::class, 'demo'])->name('typing.demo');
 
 // Dashboard route (only accessible by authenticated users)
 Route::get('/dashboard', function () {
@@ -66,6 +60,7 @@ Route::get('/api/books/demo', function (Request $request) {
     $book = Book::first(); // Change logic if you want a specific book marked as "demo"
     return response()->json($book);
 });
+Route::middleware('auth')->post('/typing-sessions', [TypingSessionController::class, 'store'])->name('typing.sessions.store');
 
 // Profile routes for authenticated users
 Route::middleware('auth')->group(function () {

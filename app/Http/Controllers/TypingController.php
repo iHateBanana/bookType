@@ -12,18 +12,24 @@ class TypingController extends Controller
      * @param \App\Models\Book|null $book
      * @return \Inertia\Response
      */
-    public function practice(Book $book = null)
+    public function practice($bookId)
     {
-        // If no book is provided, redirect to the typing.demo route
+        $book = Book::find($bookId);
+
         if (!$book) {
-            return redirect()->route('typing.demo');
+            // TODO FIX THIS, SHOULD NOT LINK BACK TO SELECT PAGE
+            return Inertia::render('Typing/Select', [
+                'error' => 'Book not found',
+                'books' => Book::all() // Pass all books back to the view
+            ]);
         }
 
-        // If a book is provided, render the practice page
-        return Inertia::render('Typing/Practice', [
+        return Inertia::render('Practice', [
             'book' => $book
         ]);
     }
+
+
 
 
     /**
@@ -40,6 +46,6 @@ class TypingController extends Controller
     public function selectBook()
     {
         $books = Book::all();
-        return Inertia::render('Typing/SelectBook', ['books' => $books]);
+        return Inertia::render('Typing/Select', ['books' => $books]);
     }
 }
