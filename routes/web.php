@@ -5,7 +5,7 @@ use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Http\Controllers\BookController;
-use App\Http\Controllers\TypingController; // Ensure you import the TypingController
+use App\Http\Controllers\TypingController;
 
 /*
 |----------------------------------------------------------------------
@@ -42,8 +42,9 @@ Route::get('/select', [BookController::class, 'selectBook'])->name('typing.selec
 Route::post('/sessions', [TypingSessionController::class, 'store']);
 
 // Route to show the practice page for a selected book
-//Route::get('/typing/{book}', [TypingController::class, 'show'])->name('typing.practice');
-Route::get('/typing/practice/{book}', [TypingController::class, 'practice'])->name('typing.practice');
+// Route to show the practice page for a selected book
+Route::get('/typing/{book}', [TypingController::class, 'practice'])->name('typing.practice');
+
 //Route::get('/demo', [TypingController::class, 'demo'])->name('typing.demo');
 
 // Dashboard route (only accessible by authenticated users)

@@ -14,43 +14,6 @@ class BookController extends Controller
         $this->gutenbergService = $gutenbergService;
     }
 
-
-    public function index()
-    {
-        $books = Book::whereNotNull('title')->get(); // Filter out bad data just in case
-
-        return Inertia::render('Books/Index', [
-            'books' => $books
-        ]);
-    }
-
-
-
-    public function selectBook()
-    {
-        $books = Book::orderBy('title')->get();
-
-        return Inertia::render('Typing/Select', [
-            'books' => $books,
-        ]);
-    }
-
-
-    public function show(Book $book)
-    {
-        if (!$book) {
-            return Inertia::render('Typing/Demo');
-        }
-
-        // Fetch book text based on the download URL or another attribute
-        $bookText = file_get_contents($book->download_url);  // Assuming the book has a download_url
-
-        return Inertia::render('Typing/Practice', [
-            'book' => $book,
-            'bookText' => $bookText,
-        ]);
-    }
-
     public function fetchFromGutenberg($bookId)
     {
         // Fetch book metadata from the service
@@ -88,7 +51,6 @@ class BookController extends Controller
                 $book = Book::create([
                     'title' => $bookData['title'],
                     'author' => $bookData['author'],
-                    'text' => $text,
                     'download_url' => $plainTextUrl,
                 ]);
 
@@ -105,5 +67,35 @@ class BookController extends Controller
             return redirect()->back()->with('error', 'Failed to find book formats.');
         }
     }
+
+    public function selectBook()
+    {
+        $books = Book::orderBy('title')->get();
+
+        return Inertia::render('Typing/Select', [
+            'books' => $books,
+        ]);
+    }
+
+//    public function show(Book $book)
+//    {
+//        if (!$book) {
+//            return Inertia::render('Typing/Demo');
+//        }
+//
+//        // Fetch book text based on the download URL or another attribute
+//        $bookText = file_get_contents($book->download_url);  // Assuming the book has a download_url
+//
+//    }
+
+//    public function index()
+//    {
+//        $books = Book::whereNotNull('title')->get(); // Filter out bad data just in case
+//
+//        return Inertia::render('Books/Index', [
+//            'books' => $books
+//        ]);
+//    }
+
 
 }

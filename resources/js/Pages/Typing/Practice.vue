@@ -23,21 +23,18 @@
 </template>
 
 <script setup>
-import {ref, onMounted} from 'vue';
+import { ref, onMounted } from 'vue';
 import axios from 'axios';
 
+// Props passed from parent (Select page)
 const props = defineProps({
     book: {
         type: Object,
         required: true,
     },
-    bookText: {
-        type: String,
-        required: true,
-    },
 });
 
-const book = ref(props.book);
+// Reactive variables
 const userInput = ref('');
 const currentText = ref('');
 const wpm = ref(0);
@@ -46,19 +43,46 @@ let startTime = null;
 
 const chunkSize = 500;
 const currentOffset = ref(0);
+const bookText = ref(''); // Store the fetched book text
 
-// Initialize book text on mounted
-onMounted(() => {
-    loadNextChunk();
+// Fetch book text when component mounts
+onMounted(async () => {
+    const text = await fetchBookText(props.book.id); // Fetch text using the book's ID
+    if (text) {
+        bookText.value = text;
+        loadNextChunk();
+    } else {
+        console.error('Failed to load book text');
+    }
 });
+
+// Function to fetch book text from Gutendex
+async function fetchBookText(bookId) {
+    try {
+        // Fetch metadata for the book from Gutendex
+        const response = await axios.get(`https://gutendex.com/books/${bookId}/`);
+        const downloadUrl = response.data.download_url;
+
+        if (downloadUrl) {
+            // Fetch the actual book text from the download URL
+            const bookTextResponse = await axios.get(downloadUrl);
+            return bookTextResponse.data;
+        } else {
+            throw new Error('Download URL not available for this book.');
+        }
+    } catch (error) {
+        console.error('Error fetching book text:', error);
+        return null;
+    }
+}
 
 // Function to load next chunk of text
 function loadNextChunk() {
-    const textLength = book.value.text.length;
+    const textLength = bookText.value.length;
     const endOffset = currentOffset.value + chunkSize;
 
     if (currentOffset.value < textLength) {
-        currentText.value = book.value.text.substring(currentOffset.value, Math.min(endOffset, textLength));
+        currentText.value = bookText.value.substring(currentOffset.value, Math.min(endOffset, textLength));
         userInput.value = '';
         startTime = null;
     }
@@ -82,7 +106,6 @@ function checkTyping() {
     const words = typed.trim().split(/\s+/).length;
     wpm.value = timeElapsed ? Math.round(words / timeElapsed) : 0;
 
-    // If the chunk is complete, save and load next chunk
     if (typed.length >= currentText.value.length) {
         saveSession();
         currentOffset.value += chunkSize;
@@ -90,17 +113,11 @@ function checkTyping() {
     }
 }
 
-// Finish practice and save the session
-async function finishPractice() {
-    await saveSession();
-    alert("Practice session completed!");
-}
-
-// Save session data
+// Save session
 async function saveSession() {
     try {
         await axios.post('/sessions', {
-            book_id: book.value.id,
+            book_id: props.book.id,
             wpm: wpm.value,
             accuracy: accuracy.value,
             completed_text: userInput.value,
@@ -110,4 +127,5 @@ async function saveSession() {
         console.error('Failed to save session:', error);
     }
 }
+
 </script>
