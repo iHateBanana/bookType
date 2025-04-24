@@ -13,10 +13,10 @@ return new class extends Migration
     {
         Schema::create('sessions', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->nullable()->constrained()->onDelete('cascade');
+            $table->foreignId('user_id')->constrained()->onDelete('cascade'); // If you always need a user, no need for nullable
             $table->foreignId('book_id')->constrained()->onDelete('cascade');
-            $table->float('wpm');
-            $table->float('accuracy');
+            $table->decimal('wpm', 5, 2); // Use decimal for precision (e.g., 123.45 WPM)
+            $table->decimal('accuracy', 5, 2); // Accuracy as percentage (e.g., 98.76%)
             $table->longText('completed_text');
             $table->integer('offset')->default(0);
             $table->enum('status', ['in_progress', 'completed', 'abandoned'])->default('in_progress');

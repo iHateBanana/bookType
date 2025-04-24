@@ -7,45 +7,36 @@ use Inertia\Inertia;
 class TypingController extends Controller
 {
     /**
-     * Show the practice page.
+     * Show the practice page for a selected book.
      *
-     * @param \App\Models\Book|null $book
+     * @param int $bookId
      * @return \Inertia\Response
      */
     public function practice($bookId)
     {
+        // Debugging line to check if the correct book is fetched
+        \Log::info("Attempting to load book with ID: {$bookId}");
+
         $book = Book::find($bookId);
 
         if (!$book) {
-            // TODO FIX THIS, SHOULD NOT LINK BACK TO SELECT PAGE
+            \Log::info("Book with ID {$bookId} not found.");
             return Inertia::render('Typing/Select', [
                 'error' => 'Book not found',
-                'books' => Book::all() // Pass all books back to the view
+                'books' => Book::all()
             ]);
         }
 
+        // If book is found, proceed with fetching the text
+        \Log::info("Book with ID {$bookId} found: {$book->title}");
+
+        $bookText = @file_get_contents($book->download_url);
+
         return Inertia::render('Practice', [
-            'book' => $book
+            'book' => $book,
+            'bookText' => $bookText,
         ]);
     }
 
-
-
-
-    /**
-     * Show the demo page for typing practice.
-     *
-     * @return \Inertia\Response
-     */
-    public function demo()
-    {
-        // Render the demo page (you can create a separate Vue component for it)
-        return Inertia::render('Typing/Demo');
-    }
-
-    public function selectBook()
-    {
-        $books = Book::all();
-        return Inertia::render('Typing/Select', ['books' => $books]);
-    }
 }
+

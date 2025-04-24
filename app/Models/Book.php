@@ -19,6 +19,7 @@ class Book extends Model
         'language',
         'download_url',
         'cover_url',
+        'text',
     ];
 
 

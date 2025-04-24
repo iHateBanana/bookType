@@ -51,22 +51,59 @@ class BookController extends Controller
         ]);
     }
 
-
-
-
     public function fetchFromGutenberg($bookId)
     {
-        // Attempt to fetch the book from Gutenberg
-        $book = $this->gutenbergService->fetchBook(1342);
+        // Fetch book metadata from the service
+        $bookData = $this->gutenbergService->fetchBook($bookId);
 
-
-        // If the book could not be fetched, log the error and redirect back with a failure message
-        if (!$book) {
+        if (!$bookData) {
             Log::error("Failed to fetch book with ID: {$bookId} from Gutenberg.");
             return redirect()->back()->with('error', 'Failed to fetch book from Project Gutenberg.');
         }
 
-        // Redirect to the typing page with the book's ID
-        return redirect()->route('typing.practice', ['book' => $book->id]);
+        // Check if 'formats' is set and is an array
+        if (isset($bookData['formats']) && is_array($bookData['formats'])) {
+            // Find a plain text URL (non-zip)
+            $plainTextUrl = null;
+
+            foreach ($bookData['formats'] as $format => $url) {
+                if (str_contains($format, 'text/plain') && !str_contains($url, '.zip')) {
+                    $plainTextUrl = $url;
+                    break;
+                }
+            }
+
+            $text = null;
+            if ($plainTextUrl) {
+                try {
+                    $text = file_get_contents($plainTextUrl);
+                } catch (\Exception $e) {
+                    Log::error("Failed to fetch text from URL: {$plainTextUrl}");
+                }
+            }
+
+            // If the book text was fetched successfully
+            if ($text) {
+                // Optionally save the book and its content to your database
+                $book = Book::create([
+                    'title' => $bookData['title'],
+                    'author' => $bookData['author'],
+                    'text' => $text,
+                    'download_url' => $plainTextUrl,
+                ]);
+
+                // Redirect to the typing practice page with the book ID and text
+                return redirect()->route('typing.practice', ['book' => $book->id]);
+            }
+
+            // Handle case where no text was retrieved
+            Log::error("Text not found for book ID: {$bookId}");
+            return redirect()->back()->with('error', 'Failed to fetch the text for the book.');
+        } else {
+            // Handle the case where 'formats' is missing or invalid
+            Log::error("Formats not found or invalid for book ID: {$bookId}");
+            return redirect()->back()->with('error', 'Failed to find book formats.');
+        }
     }
+
 }

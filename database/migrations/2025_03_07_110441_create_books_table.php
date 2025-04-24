@@ -15,6 +15,7 @@ class CreateBooksTable extends Migration
             $table->string('author')->nullable();
             $table->string('language')->default('en');
             $table->text('download_url');
+            $table->longText('text')->nullable();
             $table->text('cover_url')->nullable();
             $table->timestamps();
 

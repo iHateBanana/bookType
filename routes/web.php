@@ -27,11 +27,6 @@ Route::get('/', function () {
     ]);
 });
 
-// Route for the typing demo, which will redirect to typing.practice with a book
-//Route::get('/typing', function () {
-//    $book = \App\Models\Book::first();
-//    return redirect()->route('typing.practice', ['book' => $book->id]);
-//})->name('typing.demo');
 
 Route::get('/test-fetch/{id}', function ($id) {
     $book = app(\App\Services\ProjectGutenburgService::class)->fetchBook($id);
@@ -47,9 +42,9 @@ Route::get('/select', [BookController::class, 'selectBook'])->name('typing.selec
 Route::post('/sessions', [TypingSessionController::class, 'store']);
 
 // Route to show the practice page for a selected book
-Route::get('/typing/{book}', [TypingController::class, 'show'])->name('typing.practice');
-Route::get('/typing/{book}', [TypingController::class, 'practice'])->name('typing.practice');
-Route::get('/demo', [TypingController::class, 'demo'])->name('typing.demo');
+//Route::get('/typing/{book}', [TypingController::class, 'show'])->name('typing.practice');
+Route::get('/typing/practice/{book}', [TypingController::class, 'practice'])->name('typing.practice');
+//Route::get('/demo', [TypingController::class, 'demo'])->name('typing.demo');
 
 // Dashboard route (only accessible by authenticated users)
 Route::get('/dashboard', function () {
@@ -60,6 +55,7 @@ Route::get('/api/books/demo', function (Request $request) {
     $book = Book::first(); // Change logic if you want a specific book marked as "demo"
     return response()->json($book);
 });
+
 Route::middleware('auth')->post('/typing-sessions', [TypingSessionController::class, 'store'])->name('typing.sessions.store');
 
 // Profile routes for authenticated users

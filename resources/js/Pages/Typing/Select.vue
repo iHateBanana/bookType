@@ -33,8 +33,7 @@
                     v-for="book in books"
                     :key="book.id"
                     class="border w-full p-4 rounded shadow-md hover:shadow-xl transition cursor-pointer bg-white"
-                    @click="goToPractice(book)"
-                >
+                    @click="goToPractice(book)">
                     <img
                         :src="book.cover_url || '/images/default-cover.jpg'"
                         alt="Book cover"
@@ -80,6 +79,11 @@ onMounted(() => {
 
 // Go to the practice page for the selected book
 const goToPractice = (book) => {
-    Inertia.visit(route('typing.practice', { book: book.id }));
+    console.log(book.id);  // Log to check book ID
+    Inertia.visit(route('typing.practice', { book: book.id }), {
+        preserveState: false, // Ensure it doesn't preserve the current state
+    });
 };
+
+
 </script>

@@ -4,13 +4,13 @@
 
         <div v-if="bookText">
             <pre class="bg-gray-100 p-4 rounded">
-                {{ bookText }}
+                {{ currentText }}
             </pre>
 
             <textarea v-model="userInput" @input="checkTyping" rows="5" cols="50"></textarea>
 
             <p>WPM: {{ wpm }} | Accuracy: {{ accuracy.toFixed(2) }}%</p>
-            <button @click="saveSession" class="mt-4 px-4 py-2 bg-blue-600 text-white rounded">
+            <button @click="finishPractice" class="mt-4 px-4 py-2 bg-blue-600 text-white rounded">
                 Finish Practice
             </button>
 
@@ -23,7 +23,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import {ref, onMounted} from 'vue';
 import axios from 'axios';
 
 const props = defineProps({
@@ -49,18 +49,22 @@ const currentOffset = ref(0);
 
 // Initialize book text on mounted
 onMounted(() => {
-    currentText.value = book.value ? book.value.text.substring(0, chunkSize) : '';
-    userInput.value = '';
-    startTime = null;
+    loadNextChunk();
 });
 
-function nextChunk() {
-    currentOffset.value += chunkSize;
-    currentText.value = book.value.text.substring(currentOffset.value, currentOffset.value + chunkSize);
-    userInput.value = '';
-    startTime = null;
+// Function to load next chunk of text
+function loadNextChunk() {
+    const textLength = book.value.text.length;
+    const endOffset = currentOffset.value + chunkSize;
+
+    if (currentOffset.value < textLength) {
+        currentText.value = book.value.text.substring(currentOffset.value, Math.min(endOffset, textLength));
+        userInput.value = '';
+        startTime = null;
+    }
 }
 
+// Function to check typing progress (accuracy & WPM)
 function checkTyping() {
     if (!startTime) startTime = Date.now();
 
@@ -78,13 +82,21 @@ function checkTyping() {
     const words = typed.trim().split(/\s+/).length;
     wpm.value = timeElapsed ? Math.round(words / timeElapsed) : 0;
 
-    // If the chunk is complete
+    // If the chunk is complete, save and load next chunk
     if (typed.length >= currentText.value.length) {
         saveSession();
-        nextChunk();
+        currentOffset.value += chunkSize;
+        loadNextChunk();
     }
 }
 
+// Finish practice and save the session
+async function finishPractice() {
+    await saveSession();
+    alert("Practice session completed!");
+}
+
+// Save session data
 async function saveSession() {
     try {
         await axios.post('/sessions', {
